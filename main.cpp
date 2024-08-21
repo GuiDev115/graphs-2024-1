@@ -39,7 +39,7 @@ public:
 
     // Gerar
     vector<int> arvoreDFS();
-    void arvoreBFS();
+    vector<int> arvoreBFS(int v);
     void arvoreGeradoraMinima();
     vector<int> ordemTopologica();
     int caminhoMinimo(int origem = 0, int destino = -1);
@@ -54,7 +54,7 @@ protected:
     void dfsTrilhaEuleriana(int v, vector<vector<int>>& adj, vector<int>& trilha);
     void dfsArticulacao(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, set<int>& articulations, int& id);
     void dfsArestasPonte(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, vector<int>& bridges, int& id);
-    void dfsArvore(int v, vector<bool>& visitado, vector<int>& arestas, int& idAresta);
+    void dfsArvore(int v, vector<bool>& visitado, vector<int>& arestas);
 };
 
 Grafo::Grafo(int V, bool isDirected) {
@@ -398,7 +398,7 @@ vector<int> Grafo::arvoreDFS() {
     vector<int> arestas;
     int idAresta = 0;
 
-    dfsArvore(0, visitado, arestas, idAresta);
+    dfsArvore(0, visitado, arestas);
 
     // Verifica se há vértices desconectados
     bool grafoDesconexo = false;
@@ -412,54 +412,60 @@ vector<int> Grafo::arvoreDFS() {
     return arestas;
 }
 
-void Grafo::dfsArvore(int v, vector<bool>& visitado, vector<int>& arestas, int& idAresta) {
+void Grafo::dfsArvore(int v, vector<bool>& visitado, vector<int>& arestas) {
     visitado[v] = true;
 
     // Ordena os vizinhos do vértice v para garantir a ordem lexicográfica
     vector<pair<int, int>> vizinhos;
-    for (int u : adj[v]) {
-        vizinhos.push_back({u, pesos[v][u]});
+    for (int i = 0; i < adj[v].size(); ++i) {
+        int u = adj[v][i];
+        vizinhos.push_back({u, i}); // Armazena o vértice adjacente e sua posição (ID da aresta)
     }
     sort(vizinhos.begin(), vizinhos.end());
 
     for (auto& vizinho : vizinhos) {
         int u = vizinho.first;
+        int idAresta = vizinho.second;
         if (!visitado[u]) {
-            arestas.push_back(pesos[v][u]); // Adiciona o ID da aresta à lista
-            dfsArvore(u, visitado, arestas, idAresta);
+            arestas.push_back(idAresta); // Adiciona o ID da aresta (posição na lista) à lista
+            dfsArvore(u, visitado, arestas);
         }
     }
 }
 
 // Gerar Árvore de Largura (BFS Tree)
-void Grafo::arvoreBFS() {
+vector<int> Grafo::arvoreBFS(int v = 0) {
     vector<bool> visitado(V, false);
+    vector<int> arestas;
     queue<int> q;
-    vector<pair<int, int>> arestas;
-    int idAresta = 0;
 
-    q.push(0);
-    visitado[0] = true;
+    q.push(v);
+    visitado[v] = true;
 
     while (!q.empty()) {
-        int v = q.front();
+        int i = q.front();
         q.pop();
 
-        sort(adj[v].begin(), adj[v].end()); // Ordena os vértices adjacentes em ordem lexicográfica
+        // Ordena os vizinhos do vértice i para garantir a ordem lexicográfica
+        vector<pair<int, int>> vizinhos;
+        for (int j = 0; j < adj[i].size(); ++j) {
+            int u = adj[i][j];
+            vizinhos.push_back({u, j}); // Armazena o vértice adjacente e sua posição (ID da aresta)
+        }
+        sort(vizinhos.begin(), vizinhos.end());
 
-        for (int u : adj[v]) {
+        for (auto& vizinho : vizinhos) {
+            int u = vizinho.first;
+            int idAresta = vizinho.second;
             if (!visitado[u]) {
                 visitado[u] = true;
-                arestas.push_back({v, u});
                 q.push(u);
+                arestas.push_back(idAresta); // Adiciona o ID da aresta (posição na lista) à lista
             }
         }
     }
 
-    // Imprime os identificadores das arestas na árvore BFS
-    for (const auto& aresta : arestas) {
-        cout << "Aresta ID: " << idAresta++ << " (" << aresta.first << ", " << aresta.second << ")" << endl;
-    }
+    return arestas;
 }
 
 // Gerar Árvore Geradora Mínima (MST)
@@ -746,8 +752,10 @@ int main() {
                 }
                 cout<<endl;
                 break;
-            case 10: 
-                g.arvoreDFS();
+            case 9: // Imprimir a arvore de largura
+                for (int id : g.arvoreBFS()) {
+                    cout<< id << " ";
+                }
                 break;
             case 11: {
                 g.arvoreBFS();
