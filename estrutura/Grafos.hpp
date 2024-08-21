@@ -9,6 +9,7 @@
 #include <set>
 #include <algorithm>
 #include <queue>
+#include <iostream>
 
 using namespace std;
 
@@ -32,10 +33,10 @@ public:
 
     //Listar
     int componentesConexos();
-    vector<vector<int>> componentesFortementeConexas();
+    int componentesFortementeConexas();
     vector<int> trilhaEuleriana();
     vector<int> verticesArticulacao();
-    vector<pair<int, int>> arestasPonte();
+    vector<int> arestasPonte();
 
     // Gerar
     void arvoreDFS();
@@ -47,16 +48,16 @@ public:
     vector<vector<int>> fechoTransitivo();
 
 protected:
-    void dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vector<bool>& onStack, stack<int>& s, vector<vector<int>>& sccs, int& id);
+    void dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vector<bool>& onStack, stack<int>& s, int& numeroComponentesFortes, int& id);
     void dfsTrilhaEuleriana(int v, vector<vector<int>>& adj, vector<int>& trilha);
     void dfsArticulacao(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, set<int>& articulations, int& id);
-    void dfsArestasPonte(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, vector<pair<int, int>>& bridges, int& id);
+    void dfsArestasPonte(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, vector<int>& bridges, int& id);
     void dfsArvore(int v, vector<bool>& visitado, vector<pair<int, int>>& arestas, int& idAresta);
 };
 
 Grafo::Grafo(int V, string isDirected) {
     this->V = V;
-    this->isDirected = (isDirected == "direcionado") ? true : false;
+    this->isDirected = (isDirected == "direcionado");
     this->adj.resize(V);
     this->pesos.resize(V, vector<int>(V, INT_MAX));
 }

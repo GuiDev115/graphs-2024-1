@@ -29,18 +29,34 @@ int Grafo::componentesConexos() {
         }
     }
 
-    return numeroComponentes;  // Retorna o número de componentes conexos
+    return numeroComponentes;
 }
 
-// Função auxiliar para DFS usada em componentes fortemente conexas
-void Grafo::dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vector<bool>& onStack, stack<int>& s, vector<vector<int>>& sccs, int& id) {
+int Grafo::componentesFortementeConexas() {
+    vector<int> ids(this->V, -1);
+    vector<int> low(this->V, 0);
+    vector<bool> onStack(this->V, false);
+    stack<int> s;
+    int id = 0;
+    int numeroComponentesFortes = 0;
+
+    for (int i = 0; i < this->V; ++i) {
+        if (ids[i] == -1) {
+            dfsComponentesFortes(i, ids, low, onStack, s, numeroComponentesFortes, id);
+        }
+    }
+
+    return numeroComponentesFortes;
+}
+
+void Grafo::dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vector<bool>& onStack, stack<int>& s, int& numeroComponentesFortes, int& id) {
     s.push(at);
     onStack[at] = true;
     ids[at] = low[at] = id++;
 
     for (int to : this->adj[at]) {
         if (ids[to] == -1) {
-            dfsComponentesFortes(to, ids, low, onStack, s, sccs, id);
+            dfsComponentesFortes(to, ids, low, onStack, s, numeroComponentesFortes, id);
             low[at] = min(low[at], low[to]);
         } else if (onStack[to]) {
             low[at] = min(low[at], ids[to]);
@@ -48,34 +64,14 @@ void Grafo::dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vec
     }
 
     if (ids[at] == low[at]) {
-        vector<int> scc;
         while (true) {
             int node = s.top();
             s.pop();
             onStack[node] = false;
-            scc.push_back(node);
             if (node == at) break;
         }
-        sort(scc.begin(), scc.end());
-        sccs.push_back(scc);
+        numeroComponentesFortes++;  // Incrementa o número de SCCs
     }
-}
-
-// Função para listar componentes fortemente conexas em ordem lexicográfica
-vector<vector<int>> Grafo::componentesFortementeConexas() {
-    vector<int> ids(this->V, -1);
-    vector<int> low(this->V, 0);
-    vector<bool> onStack(this->V, false);
-    stack<int> s;
-    vector<vector<int>> sccs;
-    int id = 0;
-
-    for (int i = 0; i < this->V; ++i) {
-        if (ids[i] == -1) dfsComponentesFortes(i, ids, low, onStack, s, sccs, id);
-    }
-
-    sort(sccs.begin(), sccs.end());
-    return sccs;
 }
 
 // Função auxiliar para DFS usada na trilha Euleriana
@@ -158,17 +154,17 @@ vector<int> Grafo::verticesArticulacao() {
 }
 
 // Função auxiliar para DFS usada em arestas ponte
-void Grafo::dfsArestasPonte(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, vector<pair<int, int>>& bridges, int& id) {
+void Grafo::dfsArestasPonte(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, vector<int>& bridgeIDs, int& id) {
     visited[at] = true;
     ids[at] = low[at] = id++;
 
     for (int to : this->adj[at]) {
         if (to == parent) continue;
         if (!visited[to]) {
-            dfsArestasPonte(to, at, ids, low, visited, bridges, id);
+            dfsArestasPonte(to, at, ids, low, visited, bridgeIDs, id);
             low[at] = min(low[at], low[to]);
             if (low[to] > ids[at]) {
-                bridges.push_back({min(at, to), max(at, to)});
+                bridgeIDs.push_back(this->pesos[at][to]); // Adiciona o ID da aresta à lista de pontes
             }
         } else {
             low[at] = min(low[at], ids[to]);
@@ -177,20 +173,20 @@ void Grafo::dfsArestasPonte(int at, int parent, vector<int>& ids, vector<int>& l
 }
 
 // Função para identificar arestas ponte
-vector<pair<int, int>> Grafo::arestasPonte() {
+vector<int> Grafo::arestasPonte() {
     vector<int> low(this->V, 0), ids(this->V, -1);
     vector<bool> visited(this->V, false);
-    vector<pair<int, int>> bridges;
+    vector<int> bridgeIDs; // Vetor para armazenar IDs das arestas ponte
     int id = 0;
 
     for (int i = 0; i < this->V; ++i) {
         if (!visited[i]) {
-            dfsArestasPonte(i, -1, ids, low, visited, bridges, id);
+            dfsArestasPonte(i, -1, ids, low, visited, bridgeIDs, id);
         }
     }
 
-    sort(bridges.begin(), bridges.end());
-    return bridges;
+    sort(bridgeIDs.begin(), bridgeIDs.end());
+    return bridgeIDs;
 }
 
 #endif
