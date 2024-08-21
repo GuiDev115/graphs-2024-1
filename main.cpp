@@ -1,3 +1,9 @@
+/*
+Trabalho de Grafos
+    Guilherme Fabricio Brito da Rosa - 202120497
+    Julio Henrique Oliveira Mariano - 202110829
+*/
+
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -77,10 +83,10 @@ bool Grafo::isDirecionado() {
     return this->isDirected;
 }
 
- std::vector<int> Grafo::fechoTransitivo(int vertice) {
-    std::vector<int> fecho;
-    std::vector<bool> visitado(V, false);
-    std::queue<int> fila;
+    vector<int> Grafo::fechoTransitivo(int vertice) {
+        vector<int> fecho;
+        vector<bool> visitado(V, false);
+        queue<int> fila;
 
     fila.push(vertice);
     visitado[vertice] = true;
@@ -694,7 +700,6 @@ int main() {
 
     int opcao;
     while (iss >> opcao) {
-        cout << opcao <<"= Resultado: ";
         switch (opcao) {
             case 0: //conexo
                 cout << g.isConexo() << endl;
@@ -762,54 +767,52 @@ int main() {
             case 13: {
                 if (g.isDirecionado()) {
                     vector<int> ordem = g.ordemTopologica();
-                    std::cout << "Ordem topologica: ";
                     for (int v : ordem) {
-                        std::cout << v << " ";
+                            cout << v << " ";
                     }
-                    std::cout << std::endl;
+                        cout << endl;
                 } else {
-                    std::cout << "Ordenacao topologica não disponivel para grafos nao direcionados." << std::endl;
+                        cout << -1 <<  endl;
                 }
                 break;
             }
             case 12: {
                 int origem = 0, destino = numVertices - 1;
                 int caminho = g.caminhoMinimo(origem, destino);
-                std::cout << "Caminho minimo de " << origem << " ate " << destino << ": " << caminho << std::endl;
+                    cout << caminho <<  endl;
                 break;
             }
             case 15: {
                 if (g.isDirecionado()) {
                     int origem = 0, destino = numVertices - 1;
                     int fluxo = g.fluxoMaximo(origem, destino);
-                    std::cout << "Fluxo maximo de " << origem << " ate " << destino << ": " << fluxo << std::endl;
+                        cout << fluxo <<  endl;
                 } else {
-                    std::cout << "Fluxo maximo nao disponivel para grafos nao direcionados." << std::endl;
+                        cout << -1 <<  endl;
                 }
                 break;
             }
             case 14: { //fecho Transitivo
 
-                    if (g.isDirecionado()) {
+                if (g.isDirecionado()) {
                     int vertice = 0;
-                    std::vector<int> fecho = g.fechoTransitivo(vertice);
-                    std::sort(fecho.begin(), fecho.end()); // Ordenar lexicograficamente
+                        vector<int> fecho = g.fechoTransitivo(vertice);
+                        sort(fecho.begin(), fecho.end()); // Ordenar lexicograficamente
                     for (int v : fecho) {
-                    std::cout << v << " ";
+                        cout << v << " ";
+                    }
+                    cout <<     endl;
+                } else {
+                        cout << "-1" <<     endl;
                 }
-                std::cout << std::endl;
-            } else {
-                std::cout << "-1" << std::endl;
+                break; 
             }
-    break;
-             
-            }
-            case 100: // imprimir vertices retirada, revisar
-                // for (int v : g.trilhaEuleriana()) { // se vazia tem q revisar msm
-                //     cout << v << " ";
-                // }
-                // cout << endl;
-                break;
+            // case 100: // imprimir vertices retirada, revisar
+            //     // for (int v : g.trilhaEuleriana()) { // se vazia tem q revisar msm
+            //     //     cout << v << " ";
+            //     // }
+            //     // cout << endl;
+            //     break;
         }
     }
     return 0;
