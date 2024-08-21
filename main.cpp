@@ -1,11 +1,18 @@
 #include "./estrutura/Grafos.hpp"
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
 int main() {
-    cout<<"Inicio: "<<endl;
+    cin.ignore();
+    string linha;
+    getline(cin, linha);
+
+    istringstream iss(linha);
+
     int numVertices, numAresta;
+
     string direcionado_ou_nao_direcionado;
 
     // Leitura do número de vértices e arestas
@@ -24,11 +31,43 @@ int main() {
         g.addAresta(u, v, w);
     }
 
-    cout << "O grafo e conexo? " << (g.isConexo() ? "Sim" : "Nao") << endl;
-    cout << "O grafo e bipartido? " << (g.isBipartido() ? "Sim" : "Nao") << endl;
-    cout << "O grafo e Euleriano? " << (g.isEuleriano() ? "Sim" : "Nao") << endl;
-    cout << "O grafo possui ciclos? " << (g.possuiCiclo() ? "Sim" : "Nao") << endl;
-
-
+    int opcao;
+    while (iss >> opcao) {
+        switch (opcao) {
+            case 1:
+                cout << g.isConexo() << endl;
+                break;
+            case 2:
+                cout << g.isBipartido() << endl;
+                break;
+            case 3:
+                cout << g.isEuleriano() << endl;
+                break;
+            case 4:
+                cout << g.possuiCiclo() << endl;
+                break;
+            case 5:
+                if(g.isDirecionado()){
+                    cout << -1 << endl;
+                }else{
+                    cout << g.componentesConexos() << endl;
+                }
+                break;
+            case 6:
+                if(!g.isDirecionado()){
+                    cout << -1 << endl;
+                }else{
+                    auto sccs = g.componentesFortementeConexas();
+                    cout << "Componentes Fortemente Conexas:" << endl;
+                    for (const auto& scc : sccs) {
+                        for (int v : scc) {
+                            cout << v << " ";
+                        }
+                        cout << endl;
+                    }
+                }
+                break;
+            }
+    }
     return 0;
 }

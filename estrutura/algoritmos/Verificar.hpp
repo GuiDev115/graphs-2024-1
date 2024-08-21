@@ -63,7 +63,9 @@ bool Grafo::isBipartido() {
 
 // Função para verificar se o grafo é Euleriano
 bool Grafo::isEuleriano() {
-    if (!isConexo()) return false;
+    if (!isConexo()) {
+        return false;
+    }
 
     int verticesImpares = 0;
     for (int i = 0; i < V; ++i) {

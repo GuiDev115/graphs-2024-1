@@ -22,6 +22,7 @@ private:
 public:
     Grafo(int V, string isDirected);
     void addAresta(int u, int v, int w = 1);
+    bool isDirecionado();
 
     // Verificar
     bool isConexo();
@@ -30,17 +31,27 @@ public:
     bool possuiCiclo();
 
     //Listar
-    vector<vector<int>> componentesConexas();
+    int componentesConexos();
     vector<vector<int>> componentesFortementeConexas();
     vector<int> trilhaEuleriana();
     vector<int> verticesArticulacao();
     vector<pair<int, int>> arestasPonte();
+
+    // Gerar
+    void arvoreDFS();
+    void arvoreBFS();
+    void arvoreGeradoraMinima();
+    vector<int> ordemTopologica();
+    int caminhoMinimo(int origem = 0, int destino = -1);
+    int fluxoMaximo(int origem = 0, int destino = -1);
+    vector<vector<int>> fechoTransitivo();
 
 protected:
     void dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vector<bool>& onStack, stack<int>& s, vector<vector<int>>& sccs, int& id);
     void dfsTrilhaEuleriana(int v, vector<vector<int>>& adj, vector<int>& trilha);
     void dfsArticulacao(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, set<int>& articulations, int& id);
     void dfsArestasPonte(int at, int parent, vector<int>& ids, vector<int>& low, vector<bool>& visited, vector<pair<int, int>>& bridges, int& id);
+    void dfsArvore(int v, vector<bool>& visitado, vector<pair<int, int>>& arestas, int& idAresta);
 };
 
 Grafo::Grafo(int V, string isDirected) {
@@ -59,8 +70,14 @@ void Grafo::addAresta(int u, int v, int w) {
     }
 }
 
+bool Grafo::isDirecionado() {
+    return this->isDirected;
+}
+
 #include "algoritmos/Verificar.hpp"
 
 #include "algoritmos/Listar.hpp"
+
+#include "algoritmos/Gerar.hpp"
 
 #endif

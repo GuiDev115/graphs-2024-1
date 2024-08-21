@@ -4,13 +4,13 @@
 #include "../Grafos.hpp"
 
 // Função para listar componentes conexas em ordem lexicográfica
-vector<vector<int>> Grafo::componentesConexas() {
+int Grafo::componentesConexos() {
     vector<bool> visitado(this->V, false);
-    vector<vector<int>> componentes;
+    int numeroComponentes = 0;
 
     for (int i = 0; i < this->V; ++i) {
         if (!visitado[i]) {
-            vector<int> componente;
+            numeroComponentes++;
             stack<int> s;
             s.push(i);
             visitado[i] = true;
@@ -18,7 +18,6 @@ vector<vector<int>> Grafo::componentesConexas() {
             while (!s.empty()) {
                 int v = s.top();
                 s.pop();
-                componente.push_back(v);
 
                 for (int u : this->adj[v]) {
                     if (!visitado[u]) {
@@ -27,12 +26,10 @@ vector<vector<int>> Grafo::componentesConexas() {
                     }
                 }
             }
-            sort(componente.begin(), componente.end());
-            componentes.push_back(componente);
         }
     }
-    sort(componentes.begin(), componentes.end());
-    return componentes;
+
+    return numeroComponentes;  // Retorna o número de componentes conexos
 }
 
 // Função auxiliar para DFS usada em componentes fortemente conexas
