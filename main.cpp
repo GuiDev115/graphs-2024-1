@@ -70,6 +70,7 @@ Grafo::Grafo(int V, bool isDirected) {
     this->pesos.resize(V, vector<int>(V, INT_MAX));
 }
 
+// Adiciona uma aresta ao grafo
 void Grafo::addAresta(int u, int v, int w) {
     adj[u].push_back(v);
     pesos[u][v] = w;
@@ -78,11 +79,11 @@ void Grafo::addAresta(int u, int v, int w) {
         pesos[v][u] = w;
     }
 }
-
+// Verificar se o grafo é direcionado
 bool Grafo::isDirecionado() {
     return this->isDirected;
 }
-
+//Fecho Transitivo 
     vector<int> Grafo::fechoTransitivo(int vertice) {
         vector<int> fecho;
         vector<bool> visitado(V, false);
@@ -131,6 +132,7 @@ bool Grafo::isConexo() {
     }
 }
 
+// Função auxiliar para DFS usada em grafos conexos
 void Grafo::dfsConexo(int v, vector<bool> &visitado) {
     visitado[v] = true;
 
@@ -141,6 +143,7 @@ void Grafo::dfsConexo(int v, vector<bool> &visitado) {
     }
 }
 
+// Função para transpor o grafo
 Grafo Grafo::transpor() {
     Grafo grafoTransposto(V, isDirected);
 
@@ -193,7 +196,7 @@ bool Grafo::isEuleriano() {
             verticesImpares++;
         }
     }
-    if (isDirected) {
+    if (isDirected) { 
         return verticesImpares == 0; // Condição para ciclo euleriano em grafos direcionados
     } else {
         return verticesImpares == 0 || verticesImpares == 2; // Para grafos não direcionados
@@ -245,11 +248,11 @@ int Grafo::componentesConexos() {
             s.push(i);
             visitado[i] = true;
 
-            while (!s.empty()) {
+            while (!s.empty()) { // DFS
                 int v = s.top();
                 s.pop();
 
-                for (int u : this->adj[v]) {
+                for (int u : this->adj[v]) { // Vizinhos de v
                     if (!visitado[u]) {
                         visitado[u] = true;
                         s.push(u);
@@ -262,6 +265,7 @@ int Grafo::componentesConexos() {
     return numeroComponentes;
 }
 
+// Função para listar componentes fortemente conexas
 int Grafo::componentesFortementeConexas() {
     vector<int> ids(this->V, -1);
     vector<int> low(this->V, 0);
@@ -272,28 +276,29 @@ int Grafo::componentesFortementeConexas() {
 
     for (int i = 0; i < this->V; ++i) {
         if (ids[i] == -1) {
-            dfsComponentesFortes(i, ids, low, onStack, s, numeroComponentesFortes, id);
+            dfsComponentesFortes(i, ids, low, onStack, s, numeroComponentesFortes, id); // DFS
         }
     }
 
     return numeroComponentesFortes;
 }
 
+// Função auxiliar para DFS usada em componentes fortemente conexas
 void Grafo::dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vector<bool>& onStack, stack<int>& s, int& numeroComponentesFortes, int& id) {
     s.push(at);
     onStack[at] = true;
     ids[at] = low[at] = id++;
 
-    for (int to : this->adj[at]) {
-        if (ids[to] == -1) {
+    for (int to : this->adj[at]) { // Vizinhos de at
+        if (ids[to] == -1) { // Se to não foi visitado
             dfsComponentesFortes(to, ids, low, onStack, s, numeroComponentesFortes, id);
             low[at] = min(low[at], low[to]);
-        } else if (onStack[to]) {
+        } else if (onStack[to]) { // Se to está na pilha
             low[at] = min(low[at], ids[to]);
         }
     }
 
-    if (ids[at] == low[at]) {
+    if (ids[at] == low[at]) { // Se at é a raiz de uma SCC
         while (true) {
             int node = s.top();
             s.pop();
@@ -306,10 +311,10 @@ void Grafo::dfsComponentesFortes(int at, vector<int>& ids, vector<int>& low, vec
 
 // Função auxiliar para DFS usada na trilha Euleriana
 void Grafo::dfsTrilhaEuleriana(int v, vector<vector<int>>& adj, vector<int>& trilha) {
-    while (!adj[v].empty()) {
+    while (!adj[v].empty()) { // Enquanto houverem vizinhos
         int u = adj[v].back();
         adj[v].pop_back();
-        dfsTrilhaEuleriana(u, adj, trilha);
+        dfsTrilhaEuleriana(u, adj, trilha); 
     }
     trilha.push_back(v);
 }
@@ -328,7 +333,7 @@ vector<int> Grafo::trilhaEuleriana() {
     }
 
     int start = 0;
-    for (int i = 0; i < this->V; ++i) {
+    for (int i = 0; i < this->V; ++i) { // Encontra o vértice de grau ímpar
         if (this->adj[i].size() % 2 == 1) {
             start = i;
             break;
@@ -346,7 +351,7 @@ void Grafo::dfsArticulacao(int at, int parent, vector<int>& ids, vector<int>& lo
     ids[at] = low[at] = id++;
     int children = 0;
 
-    for (int to : this->adj[at]) {
+    for (int to : this->adj[at]) { // Vizinhos de at
         if (to == parent) continue;
         if (!visited[to]) {
             dfsArticulacao(to, at, ids, low, visited, articulations, id);
@@ -430,7 +435,7 @@ vector<int> Grafo::arvoreDFS() {
 
     // Verifica se há vértices desconectados
     bool grafoDesconexo = false;
-    for (bool v : visitado) {
+    for (bool v : visitado) { // Se algum vértice não foi visitado
         if (!v) {
             grafoDesconexo = true;
             break;
@@ -440,6 +445,7 @@ vector<int> Grafo::arvoreDFS() {
     return arestas;
 }
 
+// Função auxiliar para DFS usada em árvores
 void Grafo::dfsArvore(int v, vector<bool>& visitado, vector<int>& arestas) {
     visitado[v] = true;
 
@@ -503,6 +509,7 @@ void Grafo::arvoreGeradoraMinima() {
         return;
     }
 
+// Algoritmo de Prim
     vector<int> parent(V, -1);
     vector<int> chave(V, INT_MAX);
     vector<bool> inMST(V, false);
@@ -528,7 +535,7 @@ void Grafo::arvoreGeradoraMinima() {
             }
         }
     }
-
+// Imprime as arestas da MST
     for (int i = 1; i < V; ++i) {
         if (parent[i] != -1) {
             mstEdges.push_back({parent[i], i});
@@ -543,7 +550,7 @@ void Grafo::arvoreGeradoraMinima() {
     }
 }
 
-// Ordem Topológica
+// Gerar Ordem Topológica
 vector<int> Grafo::ordemTopologica() {
     if (!isDirected) {
         cout << "Ordem Topológica não disponível para grafos não direcionados." << endl;
@@ -554,19 +561,19 @@ vector<int> Grafo::ordemTopologica() {
     vector<int> ordem;
     priority_queue<int, vector<int>, greater<int>> q;
 
-    for (int u = 0; u < V; ++u) {
+    for (int u = 0; u < V; ++u) { // Calcula o grau de entrada de cada vértice
         for (int v : adj[u]) {
             inDegree[v]++;
         }
     }
 
-    for (int i = 0; i < V; ++i) {
+    for (int i = 0; i < V; ++i) { // Adiciona os vértices com grau de entrada 0 à fila
         if (inDegree[i] == 0) {
             q.push(i);
         }
     }
 
-    while (!q.empty()) {
+    while (!q.empty()) { // Processa os vértices em ordem topológica
         int u = q.top();
         q.pop();
         ordem.push_back(u);
@@ -630,7 +637,7 @@ int Grafo::fluxoMaximo(int origem, int destino) {
     int fluxoTotal = 0;
     vector<int> parent(V);
 
-    auto bfs = [&](int s, int t) -> bool {
+    auto bfs = [&](int s, int t) -> bool { // Encontra o caminho de s a t
         fill(parent.begin(), parent.end(), -1);
         queue<pair<int, int>> q;
         q.push({s, INT_MAX});
@@ -653,7 +660,7 @@ int Grafo::fluxoMaximo(int origem, int destino) {
         return false;
     };
 
-    while (bfs(origem, destino)) {
+    while (bfs(origem, destino)) { // Encontra o caminho de origem a destino
         int fluxo = INT_MAX;
         for (int u = destino; u != origem; u = parent[u]) {
             int p = parent[u];
@@ -699,7 +706,7 @@ int main() {
     }
 
     int opcao;
-    while (iss >> opcao) {
+    while (iss >> opcao) { // Leitura das opções
         switch (opcao) {
             case 0: //conexo
                 cout << g.isConexo() << endl;
