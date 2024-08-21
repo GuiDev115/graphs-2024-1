@@ -44,7 +44,7 @@ public:
     vector<int> ordemTopologica();
     int caminhoMinimo(int origem = 0, int destino = -1);
     int fluxoMaximo(int origem = 0, int destino = -1);
-    vector<vector<int>> fechoTransitivo();
+    vector<int> fechoTransitivo(int vertice);
 
 // auxiliares
 protected:
@@ -77,6 +77,28 @@ bool Grafo::isDirecionado() {
     return this->isDirected;
 }
 
+ std::vector<int> Grafo::fechoTransitivo(int vertice) {
+    std::vector<int> fecho;
+    std::vector<bool> visitado(V, false);
+    std::queue<int> fila;
+
+    fila.push(vertice);
+    visitado[vertice] = true;
+
+    while (!fila.empty()) {
+        int v = fila.front();
+        fila.pop();
+        fecho.push_back(v);
+
+        for (int adj : adj[v]) {
+            if (!visitado[adj]) {
+                visitado[adj] = true;
+                fila.push(adj);
+            }
+        }
+    }
+    return fecho;
+}
 
 //Verificar
 // Função para verificar se o grafo é conexo (conectividade fraca)
@@ -638,30 +660,6 @@ int Grafo::fluxoMaximo(int origem, int destino) {
     return fluxoTotal;
 }
 
-// Fecho Transitivo (Algoritmo de Warshall)
-void marcaVisitadosFecho(vector<vector<pair<int, pair<int, int>>>>& listaAdj, int vertice, vector<bool>& visitadosBool) {
-    visitadosBool[vertice] = true;
-    for (auto& relacao : listaAdj[vertice]) {
-        int verticeVizinho = relacao.second.first;
-        if (!visitadosBool[verticeVizinho]) {
-            marcaVisitadosFecho(listaAdj, verticeVizinho, visitadosBool);
-        }
-    }
-}
-
-vector<int> fechoTrans(vector<vector<pair<int, pair<int, int>>>>& listaAdj, int qtdVertices) {
-    vector<bool> visitadosBool(qtdVertices, false);
-    vector<int> fecho;
-    marcaVisitadosFecho(listaAdj, 0, visitadosBool);
-
-    for (size_t i = 0; i < visitadosBool.size(); i++) {
-        if (visitadosBool[i]) fecho.push_back(i);
-    }
-
-    sort(fecho.begin(), fecho.end());
-    return fecho;
-}
-
 int main() {
     string linha;
     getline(cin, linha);
@@ -782,19 +780,22 @@ int main() {
                 }
                 break;
             }
-            /*case 14: {
-                     // 15 - Fecho transitivo para grafos direcionados. Deve-se priorizar a ordem lexicográfica dos vértices; 0 é o vértice escolhido.
-             if (g.isDirecionado()) {
-                 vector<int> fecho = fechoTrans(lista_adj, qtdVertices);
-                 for (size_t i = 0; i < fecho.size(); i++) {
-                     cout << fecho[i] << " ";
-                 }
-                 cout << endl;
-             } else {
-                 cout << -1 << endl;
-            
-                break;}*/
-            // }
+            case 14: { //fecho Transitivo
+
+                    if (g.isDirecionado()) {
+                    int vertice = 0;
+                    std::vector<int> fecho = g.fechoTransitivo(vertice);
+                    std::sort(fecho.begin(), fecho.end()); // Ordenar lexicograficamente
+                    for (int v : fecho) {
+                    std::cout << v << " ";
+                }
+                std::cout << std::endl;
+            } else {
+                std::cout << "-1" << std::endl;
+            }
+    break;
+             
+            }
             case 100: // imprimir vertices retirada, revisar
                 // for (int v : g.trilhaEuleriana()) { // se vazia tem q revisar msm
                 //     cout << v << " ";
